@@ -12,6 +12,21 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Outfit:wght@300;400;500;600&display=swap">
 <link rel="stylesheet" href="style.css">
 <style>
+/* Jellyfish sea */
+#sea{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;
+  background:
+    radial-gradient(ellipse 70% 55% at 78% 18%,rgba(34,82,170,.38),transparent 70%),
+    radial-gradient(ellipse 60% 50% at 12% 95%,rgba(18,48,120,.36),transparent 70%),
+    linear-gradient(#01040a,#020a1c 70%,#030f2a)}
+#sea::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(90deg,rgba(1,4,10,.72),rgba(1,4,10,.1) 62%),radial-gradient(ellipse at 55% 45%,transparent 35%,rgba(1,4,10,.7))}
+#sea .j{position:absolute;animation:bob ease-in-out infinite alternate;will-change:transform}
+#sea .j svg{display:block;width:100%;height:auto;transform-origin:50% 8%;animation:pulse ease-in-out infinite;filter:drop-shadow(0 0 14px rgba(90,160,255,.55))}
+#sea .s{position:absolute;border-radius:50%;background:rgba(170,212,255,.55);animation:snow linear infinite}
+@keyframes bob{from{transform:translate3d(0,0,0) rotate(-3deg)}to{transform:translate3d(var(--dx),var(--dy),0) rotate(3deg)}}
+@keyframes pulse{0%,100%{transform:scale(1,1)}50%{transform:scale(1.05,.93)}}
+@keyframes snow{0%{transform:translateY(-20px);opacity:0}20%,80%{opacity:.8}100%{transform:translateY(60px);opacity:0}}
+
 /* Hero */
 .hero{padding:clamp(72px,15vh,160px) 0 96px}
 .display{font:500 clamp(60px,10.5vw,150px)/.92 "Cormorant Garamond",Georgia,serif;letter-spacing:-.025em;margin:0 0 30px;max-width:10ch;text-shadow:0 0 60px rgba(70,140,255,.35)}
@@ -72,22 +87,11 @@ section.block .sub{color:var(--mute);margin:0 0 30px;max-width:56ch;font-size:16
 
 .about{padding:64px 0 88px}
 .about p{margin:0;max-width:60ch;color:var(--mute);font-size:16px}
-
-/* Apple-style glass */
-.tool,.feature{background:var(--glass);border:1px solid var(--glass-border);box-shadow:var(--glass-shadow);-webkit-backdrop-filter:blur(26px) saturate(180%);backdrop-filter:blur(26px) saturate(180%)}
-.tool:hover,.feature:hover{border-color:rgba(255,255,255,.42);box-shadow:var(--glass-shadow),0 0 70px -22px var(--glow)}
-.lock{background:rgba(255,255,255,.045);border:1px dashed rgba(255,255,255,.24);box-shadow:var(--glass-shadow);-webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%)}
-.lock .q{color:rgba(255,255,255,.16);text-shadow:none}
-.lock .tag{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22);color:#d7e3f7;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
-.ico,.tool .go{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.22)}
-.steps li{border-color:rgba(255,255,255,.14)}
-.lede{color:#c3d0e6}
-.display{text-shadow:0 2px 40px rgba(0,10,40,.6)}
-.about p,section.block .sub{color:#b3c3dc}
 </style>
+<link rel="stylesheet" href="glass.css">
 </head>
 <body>
-<div id="bg" aria-hidden="true" data-src="images/ocean.jpg" data-mode="tile" style="background:#052b3b;--ov:linear-gradient(90deg,rgba(0,12,28,.68),rgba(0,12,28,.18) 65%),linear-gradient(rgba(0,14,30,.22),rgba(0,14,30,.5))"></div>
+<div id="sea" aria-hidden="true"></div>
 
 <header class="top"><div class="wrap">
 <a class="logo" href="index.html" aria-label="aquacalc home"><svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 11.5a7.5 7.5 0 0 1 15 0c0 .6-.4 1-1 1h-13c-.6 0-1-.4-1-1z"/><path d="M8 15c-.9 1.8.9 2.7 0 4.5M12 15c-.9 2 .9 3 0 5.5M16 15c-.9 1.8.9 2.7 0 4.5"/><circle cx="9" cy="9" r=".7" fill="currentColor"/><circle cx="14" cy="8.5" r=".7" fill="currentColor"/></svg><span class="word">aquacalc</span></a>
@@ -117,7 +121,7 @@ section.block .sub{color:var(--mute);margin:0 0 30px;max-width:56ch;font-size:16
 <ol class="steps">
 <li><span class="n">1</span><span><b>Enter your reef</b>Fish biomass, algae growth, grazing and nutrient levels.</span></li>
 <li><span class="n">2</span><span><b>Compare the water</b>Clean water against polluted water, or a pollution load you estimate.</span></li>
-<li><span class="n">3</span><span><b>Read the result</b>Fish needed in kg/ha, the nitrogen your reef can tolerate, and a tipping-point check.</span></li>
+<li><span class="n">3</span><span><b>Read the result</b>Fish needed in kg/ha, the nutrient pollution your reef can tolerate, and a tipping-point check.</span></li>
 </ol>
 </a>
 </section>
@@ -151,7 +155,7 @@ section.block .sub{color:var(--mute);margin:0 0 30px;max-width:56ch;font-size:16
 
 <footer class="site"><div class="wrap"><span class="word">aquacalc</span><span>Calculators for reefs, aquariums and open water.</span></div></footer>
 
-<script src="bg.js"></script>
+<script src="jellyfish.js"></script>
 <script>
 // Chains over the locked cards
 (function(){
@@ -162,7 +166,7 @@ section.block .sub{color:var(--mute);margin:0 0 30px;max-width:56ch;font-size:16
       const x=n*30-60,r=document.createElementNS(NS,"rect");
       if(n%2===0){r.setAttribute("x",x);r.setAttribute("y",110);r.setAttribute("width",42);r.setAttribute("height",20);r.setAttribute("rx",10)}
       else{r.setAttribute("x",x+9);r.setAttribute("y",114);r.setAttribute("width",24);r.setAttribute("height",12);r.setAttribute("rx",6)}
-      r.setAttribute("fill","rgba(8,16,36,.7)");r.setAttribute("stroke","#b0c6ea");r.setAttribute("stroke-width","2.4");
+      r.setAttribute("fill","#030813");r.setAttribute("stroke","#6a86b5");r.setAttribute("stroke-width","2.4");
       g.appendChild(r);
     }
   });
