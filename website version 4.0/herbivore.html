@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Herbivore fish calculator | aquacalc</title>
+<link rel="stylesheet" href="reef-bg.css">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Outfit:wght@300;400;500;600&display=swap">
+<style>
+/* palette */
+:root{
+  --bg:#01040a;--card:rgba(5,11,24,.72);--ink:#eaf2ff;--mute:#8a9bb5;
+  --line:#14233b;--line-strong:#27406a;--chart:#cfe6ff;
+  --ok:#7dd3a8;--bad:#ff8a7a;--warn:#e3bb63;
+  --aqua:#7ab8ff;--glow:rgba(110,175,255,.45);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font:400 15px/1.55 "Outfit",system-ui,-apple-system,"Segoe UI",sans-serif;
+  -webkit-font-smoothing:antialiased;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+.wrap{max-width:1200px;margin:0 auto;padding:0 32px}
+
+
+/* Intro */
+.intro{padding:72px 0 56px;max-width:880px}
+h1{font:500 clamp(38px,5vw,67px)/1.06 "Cormorant Garamond",Georgia,serif;letter-spacing:-.02em;margin:0 0 20px}
+.sub{color:var(--mute);max-width:60ch;margin:0;font-size:16px}
+
+/* Main layout */
+.main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);gap:48px;align-items:start;padding-bottom:56px}
+.results{position:sticky;top:84px}
+@media (max-width:960px){
+  .main{grid-template-columns:1fr;gap:32px}
+  .results{position:static;order:-1}
+  .wrap{padding:0 20px}
+  .intro{padding:48px 0 36px}
+}
+
+/* Inputs: accordion sections */
+details.sec{border-top:1px solid var(--line)}
+details.sec:last-of-type{border-bottom:1px solid var(--line)}
+summary{
+  list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;
+  padding:18px 0;font:500 25px/1.2 "Cormorant Garamond",Georgia,serif;letter-spacing:-.01em;
+}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font:300 22px/1 "Outfit",sans-serif;color:var(--mute);transition:transform .2s}
+details[open]>summary::after{content:"–"}
+summary:focus-visible{outline:2px solid var(--aqua);outline-offset:2px}
+.body{padding:2px 0 28px}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 24px}
+@media (max-width:480px){.fields{grid-template-columns:1fr}}
+label{display:flex;flex-direction:column;justify-content:space-between;gap:6px;font-size:13px;color:var(--mute);line-height:1.35}
+label .t{color:var(--ink)}
+label .u{color:var(--mute);margin-left:6px;font-size:12px}
+input[type=number]{
+  width:100%;padding:9px 12px;
+  background:rgba(6,14,30,.78);color:var(--ink);
+  border:1px solid var(--line);border-radius:8px;
+  font:inherit;font-size:15px;font-variant-numeric:tabular-nums;
+  appearance:textfield;-moz-appearance:textfield;
+  transition:border-color .15s,background .15s;
+}
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]:hover{border-color:var(--line-strong)}
+input[type=number]:focus{outline:none;border-color:var(--aqua);background:rgba(10,22,46,.92)}
+input:disabled{opacity:.4;cursor:not-allowed}
+.check{flex-direction:row;align-items:center;justify-content:flex-start;gap:12px;color:var(--ink);font-size:14px;margin-bottom:10px;cursor:pointer}
+input[type=checkbox]{accent-color:#7ab8ff;width:16px;height:16px;margin:0;flex:none}
+.note{font-size:13px;color:var(--mute);margin:0 0 18px}
+
+button{
+  font:500 14px "Outfit",sans-serif;padding:11px 22px;border-radius:99px;
+  border:1px solid var(--line-strong);background:transparent;color:var(--ink);
+  cursor:pointer;transition:background .15s,color .15s,border-color .15s;margin-top:24px;
+}
+button:hover{background:var(--aqua);color:#031024;border-color:var(--aqua)}
+button:focus-visible{outline:2px solid var(--aqua);outline-offset:3px}
+
+/* Results card */
+.card{background:var(--card);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:20px;padding:32px}
+.kicker{color:var(--mute);font-size:14px;margin:0 0 12px}
+.big{font:500 clamp(81px,9vw,125px)/.9 "Cormorant Garamond",Georgia,serif;letter-spacing:-.03em;margin:0 0 20px;display:flex;align-items:baseline;gap:10px}
+.big small{font:400 16px "Outfit",sans-serif;color:var(--mute);letter-spacing:0}
+.status{margin:0 0 24px;font-size:15px}
+.pill{display:inline-block;padding:1px 10px;border-radius:99px;font-weight:500;font-size:12.5px;border:1px solid currentColor;margin-right:8px;vertical-align:1px}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.warn{color:var(--warn)}
+.chartbox{margin-top:28px;padding-top:24px;border-top:1px solid var(--line)}
+.chartbox h3{font:500 14px "Outfit",sans-serif;margin:0 0 12px;color:var(--mute)}
+svg{width:100%;height:auto;display:block}
+
+/* Rows */
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 24px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}
+.row:last-child{border-bottom:0}
+.row span:first-child{color:var(--mute)}
+.row span:last-child{font-weight:500;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.card .row:first-of-type{border-top:1px solid var(--line)}
+p{margin:8px 0}
+
+/* Detail sections */
+.details{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:48px;padding:56px 0;border-top:1px solid var(--line)}
+@media (max-width:960px){.details{grid-template-columns:1fr;gap:40px;padding:40px 0}}
+.details h2{font:500 29px/1.2 "Cormorant Garamond",Georgia,serif;letter-spacing:-.01em;margin:0 0 14px}
+.scroll{overflow-x:auto}
+
+footer{padding:24px 0 56px;border-top:1px solid var(--line);color:var(--mute);font-size:13px}
+footer p{margin:0;max-width:80ch}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* Coral reef background */
+#reef{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;
+  background:radial-gradient(ellipse 80% 50% at 50% -8%,rgba(46,100,205,.34),transparent 70%),linear-gradient(#01040a,#030c20 62%,#05173b)}
+#reef svg{position:absolute;left:0;bottom:0;width:100%;height:68vh;
+  -webkit-mask-image:linear-gradient(to top,#000 50%,transparent);mask-image:linear-gradient(to top,#000 50%,transparent)}
+#reef .back{opacity:.4}
+#reef .front{opacity:.5;filter:drop-shadow(0 0 10px rgba(80,150,255,.5))}
+#reef .back{filter:blur(1.4px)}
+#reef .sway{animation:sway ease-in-out infinite alternate}
+@keyframes sway{from{transform:rotate(-1.4deg)}to{transform:rotate(1.4deg)}}
+#reef .bub{position:absolute;bottom:-20px;border-radius:50%;border:1px solid rgba(170,212,255,.45);animation:rise linear infinite}
+@keyframes rise{to{transform:translateY(-110vh) translateX(18px);opacity:0}}
+</style>
+<link rel="stylesheet" href="glass.css">
+</head>
+<body>
+  <div class="reef-bg" aria-hidden="true">
+     <div class="reef-bg__parallax"><div class="reef-bg__img"></div></div>
+     <canvas class="reef-bg__canvas"></canvas>
+     <div class="reef-bg__shade"></div>
+   </div>
+
+<header class="top"><div class="wrap">
+<a class="logo" href="index.html" aria-label="Back to aquacalc home"><span class="back" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6 6 6 6"/></svg></span><svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 11.5a7.5 7.5 0 0 1 15 0c0 .6-.4 1-1 1h-13c-.6 0-1-.4-1-1z"/><path d="M8 15c-.9 1.8.9 2.7 0 4.5M12 15c-.9 2 .9 3 0 5.5M16 15c-.9 1.8.9 2.7 0 4.5"/><circle cx="9" cy="9" r=".7" fill="currentColor"/><circle cx="14" cy="8.5" r=".7" fill="currentColor"/></svg><span class="word">aquacalc</span></a>
+<span class="where">Herbivore fish calculator</span>
+</div></header>
+<div class="wrap">
+
+
+<section class="intro">
+<h1>How many herbivorous fish does a reef need to hold Sargassum below its threshold?</h1>
+<p class="sub">Enter your own measurements. Nitrogen and phosphorus count equally: each is divided by its own scale constant and the two are averaged into one nutrient pollution factor Ω. The calculator then applies the framework's master equation, F_req = F_ref · Λ<sup>1/β</sup>, to clean and polluted water. All starting values are hypothetical examples, not field data.</p>
+</section>
+
+<section class="main">
+<div id="inputs"></div>
+<aside class="results" id="out"></aside>
+</section>
+
+<section class="details" id="detail"></section>
+
+<footer><p>Model assumptions: one algal genus, fixed fish biomass, steady nutrients, spatially averaged reef. Unvalidated against field data.</p></footer>
+</div>
+
+<script>
+const G=[
+["Fish and feeding assay",[
+["Fref","Reference fish biomass F_ref","kg/ha",40,"any"],
+["Favail","Fish biomass at your site","kg/ha",50,"any"],
+["lam0","Assay removal rate λ₀","/day",0.30,"any"],
+["kap0","Assay-to-field factor κ₀","0–1",0.5,"any"],
+["beta","Interference exponent β","0–1",0.6,"any"]]],
+["Algae",[
+["K","Full-cover biomass K","g/m²",1000,"any"],
+["h","Grazing half-saturation h","g/m²",100,"any"],
+["Bc","Damage threshold B_c","g/m²",100,"any"],
+["s","Spore/fragment input s","g/m²/day",0.2,"any"]]],
+["Nutrient pollution response",[
+["rmax","Growth-rate scale r_max","/day",0.12,"any"],
+["KN","Nitrogen scale K_N","µM",2,"any"],
+["KP","Phosphorus scale K_P","µM",0.2,"any"],
+["zeta","Palatability size ζ","",0.5,"any"],
+["KQ","Palatability scale K_Q","Ω units",1,"any"]]],
+["Water conditions",[
+["Nc","Clean nitrogen N_c","µM",0.5,"any"],
+["Pc","Clean phosphorus P_c","µM",0.1,"any"],
+["N","Polluted nitrogen N","µM",2,"any"],
+["P","Polluted phosphorus P","µM",0.3,"any"]]]];
+const def={};
+const inp=document.getElementById("inputs");
+const fld=(id,t,u,val,step)=>`<label><span><span class="t">${t}</span>${u?`<span class="u">${u}</span>`:""}</span><input type="number" step="${step}" id="${id}" value="${val}"></label>`;
+G.forEach(([t,fs],i)=>{const d=document.createElement("details");d.className="sec";d.open=true;
+d.innerHTML="<summary>"+t+"</summary><div class='body'><div class='fields'>"+fs.map(f=>{def[f[0]]=f[3];return fld(f[0],f[1],f[2],f[3],f[4])}).join("")+"</div></div>";inp.appendChild(d)});
+const lp=document.createElement("details");lp.className="sec";lp.open=true;
+const ld=[["LN","Nitrogen load L_N","µmol/day",3000000],["LP","Phosphorus load L_P","µmol/day",400000],["V","Water volume V","L",1000000],["kf","Flushing rate k_f","/day",2]];
+lp.innerHTML="<summary>Estimate N and P from a pollution load</summary><div class='body'><label class='check'><input type='checkbox' id='useLoad'><span>Use load, volume and flushing instead of measured values</span></label><p class='note'>N = N_c + L / (V·k_f), with the clean values as background. When ticked, the polluted N and P boxes above are filled in for you.</p><div class='fields'>"+ld.map(f=>{def[f[0]]=f[3];return fld(f[0],f[1],f[2],f[3],"any")}).join("")+"</div></div>";inp.appendChild(lp);
+const rb=document.createElement("button");rb.textContent="Reset to example values";rb.onclick=()=>{for(const k in def)document.getElementById(k).value=def[k];document.getElementById("useLoad").checked=false;calc()};inp.appendChild(rb);
+inp.addEventListener("input",calc);
+const f=n=>!isFinite(n)?"—":Math.abs(n)>=100?n.toFixed(0):Math.abs(n)>=1?n.toPrecision(3):Math.abs(n)===0?"0":n.toPrecision(3);
+function calc(){
+const v={};for(const k in def)v[k]=parseFloat(document.getElementById(k).value);
+const ul=document.getElementById("useLoad").checked;
+if(ul){const d=v.V*v.kf;if(d>0){v.N=v.Nc+v.LN/d;v.P=v.Pc+v.LP/d;document.getElementById("N").value=+v.N.toPrecision(4);document.getElementById("P").value=+v.P.toPrecision(4)}else{v.N=NaN}}
+else for(const k of ["LN","LP","V","kf"])v[k]=1;
+document.getElementById("N").disabled=ul;document.getElementById("P").disabled=ul;
+const o=document.getElementById("out"),dt=document.getElementById("detail");
+if(Object.values(v).some(isNaN)||v.beta<=0||v.beta>1||v.lam0<=0||v.kap0<=0||v.K<=0||v.h<=0||v.Bc<=0||v.Bc>=v.K||v.Fref<=0||v.KN<=0||v.KP<=0||v.KQ<=0){o.innerHTML="<div class='card'><p class='kicker'>Check your inputs</p><p>Fill every field. Keep 0 &lt; β ≤ 1, B_c below K, and all rates, constants and biomasses above zero.</p></div>";dt.style.display="none";return}
+dt.style.display="";
+const bc=v.Bc/v.K;
+const om=(N,P)=>0.5*(N/v.KN+P/v.KP);
+const Om0=om(v.Nc,v.Pc),Om1=om(v.N,v.P);
+const rf=O=>v.rmax*O/(1+O);
+const kf=O=>v.kap0*(1+v.zeta*O/(v.KQ+O))/(1+v.zeta*Om0/(v.KQ+Om0));
+const lam=(r,k)=>(1+v.Bc/v.h)*(r*(1-bc)+v.s/v.Bc)/(k*v.lam0);
+const Fr=L=>v.Fref*Math.pow(L,1/v.beta);
+const r0=rf(Om0),r1=rf(Om1),k1=kf(Om1);
+const L0=lam(r0,v.kap0),L1=lam(r1,k1),L1n=lam(r1,v.kap0);
+const F0=Fr(L0),F1=Fr(L1),M=F1/F0,Mn=Fr(L1n)/F0;
+const S=(v.s/v.Bc)/(r1*(1-bc));
+const ok=v.Favail>=F1;
+// chart + N*
+const Nmax=Math.max(3,Om1*1.5,Om0*1.5),pts=[];
+for(let i=0;i<=120;i++){const n=0.01+(Nmax-0.01)*i/120;pts.push([n,Fr(lam(rf(n),kf(n)))])}
+let Ns=null;for(const p of pts){if(p[1]>v.Favail){Ns=p[0];break}}
+const ymax=Math.max(...pts.map(p=>p[1]),v.Favail,F1)*1.1;
+const X=n=>50+(n/Nmax)*530,Y=y=>220-(y/ymax)*200;
+const path=pts.map((p,i)=>(i?"L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1)).join("");
+const chart=`<svg viewBox="0 0 600 260" role="img" aria-label="Required fish biomass versus nutrient pollution factor" font-family="Outfit,system-ui,sans-serif">
+<line x1="50" y1="220" x2="580" y2="220" stroke="var(--line-strong)"/><line x1="50" y1="20" x2="50" y2="220" stroke="var(--line-strong)"/>
+<path d="${path}" fill="none" stroke="var(--chart)" stroke-width="2"/>
+<line x1="50" x2="580" y1="${Y(v.Favail)}" y2="${Y(v.Favail)}" stroke="var(--mute)" stroke-dasharray="5 5"/>
+<text x="578" y="${Y(v.Favail)-6}" text-anchor="end" font-size="12" fill="var(--mute)">fish available: ${f(v.Favail)}</text>
+<circle cx="${X(Om0)}" cy="${Y(F0)}" r="5" fill="var(--ok)"/><circle cx="${X(Om1)}" cy="${Y(F1)}" r="5" fill="var(--bad)"/>
+<text x="${X(Om0)+9}" y="${Y(F0)-9}" font-size="12" fill="var(--ink)">clean</text>
+<text x="${Math.min(X(Om1)+9,540)}" y="${Y(F1)-9}" font-size="12" fill="var(--ink)">polluted</text>
+<text x="315" y="252" text-anchor="middle" font-size="12" fill="var(--mute)">nutrient pollution factor Ω = ½(N/K_N + P/K_P)</text>
+<text x="12" y="120" font-size="12" fill="var(--mute)" transform="rotate(-90 12 120)" text-anchor="middle">required fish (kg/ha)</text>
+<text x="46" y="224" text-anchor="end" font-size="11" fill="var(--mute)">0</text><text x="46" y="28" text-anchor="end" font-size="11" fill="var(--mute)">${f(ymax)}</text>
+<text x="580" y="236" text-anchor="end" font-size="11" fill="var(--mute)">${f(Nmax)}</text></svg>`;
+// bistability
+const chi=v.h/v.K,eps=v.s/(r1*v.K),cv=P=>Fr(r1*P/(chi*k1*v.lam0));let bi="";
+if(chi>=1||r1<=0){bi="<p>Not applicable: needs h &lt; K and a positive growth rate.</p>"}else{
+const ec=Math.pow(1-chi,3)/(27*chi),Pi=b=>b===0?chi:(chi+b)*(1-b+eps/b);
+const g=b=>-2*b*b*b+(1-chi)*b*b-eps*chi;
+bi=`<div class="row"><span>χ = h/K</span><span>${f(chi)}</span></div><div class="row"><span>ε = s/(r·K)</span><span>${f(eps)}</span></div><div class="row"><span>Critical ε_c = (1−χ)³/(27χ)</span><span>${f(ec)}</span></div>`;
+if(eps>=ec){bi+="<p class='ok'>ε ≥ ε_c: one steady state, no tipping point or hysteresis. The requirement above is the whole story.</p>"}else{
+const bs=(1-chi)/3,bis=(lo,hi)=>{for(let i=0;i<80;i++){const m=(lo+hi)/2;(g(lo)*g(m)<=0)?hi=m:lo=m}return(lo+hi)/2};
+const bm=eps===0?0:bis(0,bs),bM=bis(bs,(1-chi)/2),Pc_=Pi(bm),Pr=Pi(bM),Pn=Pi(bc);
+bi+=`<div class="row"><span>Collapse point Π(b_m) = ${f(Pc_)}</span><span>${f(cv(Pc_))} kg/ha</span></div><div class="row"><span>Balance at your threshold Π(b_c) = ${f(Pn)}</span><span>${f(cv(Pn))} kg/ha</span></div><div class="row"><span>Recovery point Π(b_M) = ${f(Pr)}</span><span>${f(cv(Pr))} kg/ha</span></div><div class="row"><span>Hysteresis (fish to recover ÷ fish to prevent)</span><span>${f(Math.pow(Pr/Pc_,1/v.beta))}×</span></div>
+<p class="warn">ε &lt; ε_c: the reef is bistable. Once algae take over, recovery needs about that many times the fish that prevention does.${bc>bM?" Your threshold b_c = "+f(bc)+" is above b_M = "+f(bM)+", so Theorem 2 does not apply.":""}</p>`}}
+o.innerHTML=`
+<div class="card">
+<p class="kicker">Required herbivorous fish, polluted water</p>
+<div class="big">${f(F1)}<small>kg/ha</small></div>
+<p class="status">${ok?`<span class="pill ok">Enough</span>${f(v.Favail)} kg/ha available covers it.`:`<span class="pill bad">Not enough</span>${f(v.Favail)} kg/ha available is short by ${f(F1-v.Favail)} kg/ha.`}</p>
+<div class="row"><span>Clean water would need</span><span>${f(F0)} kg/ha</span></div>
+<div class="row"><span>Nutrient pollution factor Ω, clean → polluted</span><span>${f(Om0)} → ${f(Om1)}</span></div>
+<div class="row"><span>Multiplier M_Ω</span><span>${f(M)} ${M<1.2?"<span class='ok'>small effect</span>":"<span class='warn'>pollution matters</span>"}</span></div>
+<div class="row"><span>Nutrient pollution tolerance Ω*</span><span>${Ns===null?"above "+f(Nmax):Ns<=0.03?"already exceeded":"≈ "+f(Ns)+" (N and P each ≈ "+f(Ns/Om0)+"× clean)"}</span></div>
+<div class="chartbox"><h3>Required fish across nutrient pollution levels</h3>${chart}</div>
+</div>`;
+dt.innerHTML=`
+<div><h2>Step by step</h2>
+${ul?`<div class="row"><span>Flushed volume V·k_f</span><span>${f(v.V*v.kf)} L/day</span></div><div class="row"><span>Added nitrogen L_N/(V·k_f)</span><span>${f(v.LN/(v.V*v.kf))} µM</span></div><div class="row"><span>Added phosphorus L_P/(V·k_f)</span><span>${f(v.LP/(v.V*v.kf))} µM</span></div><div class="row"><span>N = N_c + added N;  P = P_c + added P</span><span>${f(v.N)} µM;  ${f(v.P)} µM</span></div>`:""}
+<div class="row"><span>Crowding term 1 − b_c, with b_c = B_c/K</span><span>${f(1-bc)}</span></div>
+<div class="row"><span>Saturation penalty 1 + B_c/h</span><span>${f(1+v.Bc/v.h)}</span></div>
+<div class="row"><span>Input per biomass s/B_c</span><span>${f(v.s/v.Bc)} /day</span></div>
+<div class="row"><span>Nitrogen term N/K_N, clean → polluted</span><span>${f(v.Nc/v.KN)} → ${f(v.N/v.KN)}</span></div><div class="row"><span>Phosphorus term P/K_P, clean → polluted</span><span>${f(v.Pc/v.KP)} → ${f(v.P/v.KP)}</span></div><div class="row"><span>Nutrient pollution factor Ω = ½(N/K_N + P/K_P)</span><span>${f(Om0)} → ${f(Om1)}</span></div><div class="row"><span>Nitrogen share of Ω, polluted (phosphorus share is the rest)</span><span>${f(100*(v.N/v.KN)/(v.N/v.KN+v.P/v.KP))}%</span></div>
+<div class="row"><span>Growth clean r₀ = r_max·Ω₀/(1+Ω₀)</span><span>${f(r0)} /day</span></div>
+<div class="row"><span>Growth polluted r₁ = r_max·Ω₁/(1+Ω₁)</span><span>${f(r1)} /day</span></div>
+<div class="row"><span>Palatability κ₁ = κ₀·[1+ζΩ₁/(K_Q+Ω₁)]/[1+ζΩ₀/(K_Q+Ω₀)]</span><span>${f(k1)}</span></div>
+<div class="row"><span>Λ clean = (1+B_c/h)[r₀(1−b_c)+s/B_c]/(κ₀λ₀)</span><span>${f(L0)}</span></div>
+<div class="row"><span>Λ polluted, using κ₁</span><span>${f(L1)}</span></div>
+<div class="row"><span>F_req = F_ref · Λ^(1/β), clean</span><span>${f(F0)} kg/ha</span></div>
+<div class="row"><span>F_req polluted</span><span>${f(F1)} kg/ha</span></div>
+<div class="row"><span>M_Ω without palatability effect</span><span>${f(Mn)}</span></div>
+<div class="row"><span>Input share S = (s/B_c)/[r₁(1−b_c)]</span><span>${f(S)} ${S<0.05?"(can omit)":S>0.2?"(keep)":""}</span></div>
+<div class="row"><span>Error amplification factor 1/β</span><span>${f(1/v.beta)}</span></div></div>
+<div><h2>Tipping point check</h2><div class="scroll">${bi}</div></div>`}
+calc();
+</script>
+<script src="reef-bg.js"></script>
+</body>
+</html>

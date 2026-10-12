@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="aquacalc: how many herbivorous fish does a reef need? Plus a calculator and converter, with more on the way.">
+<title>aquacalc | How many fish does a reef need?</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Outfit:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+<style>
+/* Hero */
+.hero{padding:clamp(72px,15vh,160px) 0 96px}
+.display{font:500 clamp(60px,10.5vw,150px)/.92 "Cormorant Garamond",Georgia,serif;letter-spacing:-.025em;margin:0 0 30px;max-width:10ch;text-shadow:0 0 60px rgba(70,140,255,.35)}
+.lede{color:#a7b7d1;font-size:19px;max-width:46ch;margin:0}
+.actions{display:flex;flex-wrap:wrap;align-items:center;gap:22px;margin-top:38px}
+.cta{display:inline-flex;align-items:center;gap:12px;padding:15px 28px;border-radius:99px;background:var(--aqua);color:#031024;text-decoration:none;font-weight:500;font-size:16px;box-shadow:0 0 42px -6px var(--glow);transition:background .2s,box-shadow .2s}
+.cta:hover{background:#fff;box-shadow:0 0 56px -4px var(--glow)}
+.cta svg{width:18px;height:18px}
+.alt{color:var(--mute);text-decoration:none;border-bottom:1px solid var(--line-strong);padding-bottom:2px}
+.alt:hover{color:var(--ink);border-color:var(--aqua)}
+a:focus-visible{outline:2px solid var(--aqua);outline-offset:4px}
+
+/* Sections */
+section.block{padding:56px 0 8px}
+section.block h2{font:500 clamp(36px,4.6vw,54px)/1.05 "Cormorant Garamond",Georgia,serif;letter-spacing:-.015em;margin:0 0 10px}
+section.block .sub{color:var(--mute);margin:0 0 30px;max-width:56ch;font-size:16px}
+
+/* Featured fish calculator */
+.feature{position:relative;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:40px;align-items:center;padding:44px;border:1px solid var(--line-strong);border-radius:26px;text-decoration:none;
+  background:linear-gradient(135deg,rgba(14,36,82,.55),rgba(4,10,24,.7));-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);transition:border-color .25s,box-shadow .25s}
+.feature:hover{border-color:var(--aqua);box-shadow:0 0 70px -24px var(--glow)}
+.feature h3{font:500 clamp(34px,4vw,50px)/1.05 "Cormorant Garamond",Georgia,serif;margin:0 0 14px;letter-spacing:-.01em}
+.feature p.d{color:#a7b7d1;margin:0 0 26px;max-width:46ch}
+.feature .open{display:inline-flex;align-items:center;gap:10px;font-weight:500;color:var(--aqua)}
+.feature .open svg{width:18px;height:18px;transition:transform .2s}
+.feature:hover .open svg{transform:translateX(4px)}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.steps li{display:grid;grid-template-columns:34px 1fr;gap:14px;padding:16px 0;border-bottom:1px solid var(--line-strong);color:#a7b7d1;font-size:14.5px}
+.steps li:last-child{border-bottom:0}
+.steps b{display:block;color:var(--ink);font-weight:500;font-size:16px}
+.steps .n{font:500 26px/1 "Cormorant Garamond",Georgia,serif;color:var(--aqua)}
+.coral{position:absolute;right:30px;top:24px;width:70px;height:80px;opacity:.9;filter:drop-shadow(0 0 10px var(--glow))}
+@media (max-width:860px){.feature{grid-template-columns:1fr;padding:30px 24px}.coral{display:none}}
+
+/* Grid */
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:960px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:620px){.grid{grid-template-columns:1fr}}
+
+.tool{position:relative;display:flex;flex-direction:column;justify-content:space-between;gap:40px;min-height:290px;padding:28px;border:1px solid var(--line-strong);border-radius:22px;background:var(--card);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);text-decoration:none;transition:border-color .2s,box-shadow .2s}
+.tool:hover{border-color:var(--aqua);box-shadow:0 0 50px -18px var(--glow)}
+.ico{width:54px;height:54px;border:1px solid var(--line-strong);border-radius:50%;display:grid;place-items:center;color:var(--aqua);box-shadow:inset 0 0 18px rgba(110,175,255,.14),0 0 22px -8px var(--glow)}
+.ico svg{width:26px;height:26px;filter:drop-shadow(0 0 5px var(--glow))}
+.tool h3{font:500 33px/1.05 "Cormorant Garamond",Georgia,serif;margin:0 0 10px;letter-spacing:-.01em}
+.tool p{color:var(--mute);margin:0;font-size:14.5px}
+.tool .go{position:absolute;top:28px;right:28px;width:38px;height:38px;border-radius:50%;border:1px solid var(--line-strong);display:grid;place-items:center;transition:background .2s,color .2s,border-color .2s}
+.tool .go svg{width:16px;height:16px;transition:transform .2s}
+.tool:hover .go{background:var(--aqua);color:#031024;border-color:var(--aqua)}
+.tool:hover .go svg{transform:translateX(2px)}
+
+/* Locked */
+.lock{position:relative;min-height:290px;border:1px dashed var(--line-strong);border-radius:22px;overflow:hidden;background:rgba(2,7,16,.62);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);cursor:not-allowed}
+.lock .q{position:absolute;inset:0;display:grid;place-items:center;font:500 190px/1 "Cormorant Garamond",Georgia,serif;color:#1d3158;text-shadow:0 0 40px rgba(80,140,255,.25);user-select:none}
+.lock svg.chains{position:absolute;inset:0;width:100%;height:100%}
+.lock .tag{position:absolute;left:20px;bottom:18px;font-size:13px;color:var(--mute);background:#02060e;border:1px solid var(--line-strong);padding:3px 12px;border-radius:99px}
+.lock:hover svg.chains{animation:rattle .45s ease-in-out}
+@keyframes rattle{0%,100%{transform:translate(0,0)}20%{transform:translate(-3px,1px) rotate(-.6deg)}40%{transform:translate(3px,-1px) rotate(.6deg)}60%{transform:translate(-2px,1px)}80%{transform:translate(2px,0)}}
+
+.about{padding:64px 0 88px}
+.about p{margin:0;max-width:60ch;color:var(--mute);font-size:16px}
+
+/* Apple-style glass */
+.tool,.feature{background:var(--glass);border:1px solid var(--glass-border);box-shadow:var(--glass-shadow);-webkit-backdrop-filter:blur(26px) saturate(180%);backdrop-filter:blur(26px) saturate(180%)}
+.tool:hover,.feature:hover{border-color:rgba(255,255,255,.42);box-shadow:var(--glass-shadow),0 0 70px -22px var(--glow)}
+.lock{background:rgba(255,255,255,.045);border:1px dashed rgba(255,255,255,.24);box-shadow:var(--glass-shadow);-webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%)}
+.lock .q{color:rgba(255,255,255,.16);text-shadow:none}
+.lock .tag{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22);color:#d7e3f7;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.ico,.tool .go{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.22)}
+.steps li{border-color:rgba(255,255,255,.14)}
+.lede{color:#c3d0e6}
+.display{text-shadow:0 2px 40px rgba(0,10,40,.6)}
+.about p,section.block .sub{color:#b3c3dc}
+</style>
+</head>
+<body>
+<div id="bg" aria-hidden="true" data-src="images/ocean.jpg" data-mode="bottom" style="background:#2a6077;--ov:linear-gradient(90deg,rgba(0,12,28,.68),rgba(0,12,28,.20) 65%),linear-gradient(rgba(0,14,30,.24),rgba(0,14,30,.55))"></div>
+
+<header class="top"><div class="wrap">
+<a class="logo" href="index.html" aria-label="aquacalc home"><svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 11.5a7.5 7.5 0 0 1 15 0c0 .6-.4 1-1 1h-13c-.6 0-1-.4-1-1z"/><path d="M8 15c-.9 1.8.9 2.7 0 4.5M12 15c-.9 2 .9 3 0 5.5M16 15c-.9 1.8.9 2.7 0 4.5"/><circle cx="9" cy="9" r=".7" fill="currentColor"/><circle cx="14" cy="8.5" r=".7" fill="currentColor"/></svg><span class="word">aquacalc</span></a>
+<nav><a href="#more">More calculators</a></nav>
+</div></header>
+
+<main>
+<div class="wrap">
+
+<section class="hero">
+<h1 class="display">How many fish does a reef need?</h1>
+<p class="lede">Find out how many herbivorous fish it takes to keep Sargassum below its damage threshold, in clean water and in polluted water.</p>
+<div class="actions">
+<a class="cta" href="herbivore.html">Open the fish calculator<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+<a class="alt" href="#more">More calculators</a>
+</div>
+</section>
+
+<section class="block" id="fish">
+<a class="feature" href="herbivore.html">
+<svg class="coral" viewBox="0 0 120 140" fill="none" stroke-linecap="round" aria-hidden="true"><g stroke="#4a85ea" stroke-width="7"><path d="M60 140V96M60 104C60 84 40 76 38 54M60 104C60 86 80 74 84 46M38 54C36 42 28 38 26 24M38 54c4-10 12-12 12-28M84 46c0-12 8-16 10-30M84 46c-6-8-10-10-10-24"/></g><g stroke="#b5d9ff" stroke-width="2" opacity=".6"><path d="M60 140V96M60 104C60 84 40 76 38 54M60 104C60 86 80 74 84 46"/></g></svg>
+<div>
+<h3>Herbivore fish requirement</h3>
+<p class="d">Our flagship calculator applies the framework's master equation to your own reef measurements and shows the working at every step.</p>
+<span class="open">Open the calculator<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+</div>
+<ol class="steps">
+<li><span class="n">1</span><span><b>Enter your reef</b>Fish biomass, algae growth, grazing and nutrient levels.</span></li>
+<li><span class="n">2</span><span><b>Compare the water</b>Clean water against polluted water, or a pollution load you estimate.</span></li>
+<li><span class="n">3</span><span><b>Read the result</b>Fish needed in kg/ha, the nitrogen your reef can tolerate, and a tipping-point check.</span></li>
+</ol>
+</a>
+</section>
+
+<section class="block" id="more">
+<h2>More calculators</h2>
+<p class="sub">The standard calculator is ready. The other calculators are coming soon.</p>
+<div class="grid">
+
+<a class="tool" href="calculator.html">
+<span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+<span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="2.5" width="15" height="19" rx="7.5"/><path d="M9 7.5h6"/><path d="M9 12h.01M12 12h.01M15 12h.01M9 16h.01M12 16h.01M15 16h.01" stroke-width="2.4"/></svg></span>
+<span><h3>Calculator</h3><p>Everyday arithmetic with a built-in converter for length, mass, volume, temperature, pressure and more.</p></span>
+</a>
+
+<div class="lock" role="group" aria-label="Locked calculator, coming soon"><div class="q" aria-hidden="true">?</div><svg class="chains" viewBox="0 0 360 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g class="chain" data-rot="24"></g><g class="chain" data-rot="-24"></g></svg><span class="tag">Locked</span></div>
+<div class="lock" role="group" aria-label="Locked calculator, coming soon"><div class="q" aria-hidden="true">?</div><svg class="chains" viewBox="0 0 360 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g class="chain" data-rot="24"></g><g class="chain" data-rot="-24"></g></svg><span class="tag">Locked</span></div>
+<div class="lock" role="group" aria-label="Locked calculator, coming soon"><div class="q" aria-hidden="true">?</div><svg class="chains" viewBox="0 0 360 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g class="chain" data-rot="24"></g><g class="chain" data-rot="-24"></g></svg><span class="tag">Locked</span></div>
+<div class="lock" role="group" aria-label="Locked calculator, coming soon"><div class="q" aria-hidden="true">?</div><svg class="chains" viewBox="0 0 360 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g class="chain" data-rot="24"></g><g class="chain" data-rot="-24"></g></svg><span class="tag">Locked</span></div>
+<div class="lock" role="group" aria-label="Locked calculator, coming soon"><div class="q" aria-hidden="true">?</div><svg class="chains" viewBox="0 0 360 240" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g class="chain" data-rot="24"></g><g class="chain" data-rot="-24"></g></svg><span class="tag">Locked</span></div>
+
+</div>
+</section>
+
+<section class="about">
+<p>Each calculator lives on its own page and shows its working, so you can check every step. Use the aquacalc logo at the top of any page to come back here.</p>
+</section>
+
+</div>
+</main>
+
+<footer class="site"><div class="wrap"><span class="word">aquacalc</span><span>Calculators for reefs, aquariums and open water.</span></div></footer>
+
+<script src="bg.js"></script>
+<script>
+// Chains over the locked cards
+(function(){
+  const NS="http://www.w3.org/2000/svg";
+  document.querySelectorAll("g.chain").forEach(g=>{
+    g.setAttribute("transform","rotate("+g.dataset.rot+" 180 120)");
+    for(let n=0;n<18;n++){
+      const x=n*30-60,r=document.createElementNS(NS,"rect");
+      if(n%2===0){r.setAttribute("x",x);r.setAttribute("y",110);r.setAttribute("width",42);r.setAttribute("height",20);r.setAttribute("rx",10)}
+      else{r.setAttribute("x",x+9);r.setAttribute("y",114);r.setAttribute("width",24);r.setAttribute("height",12);r.setAttribute("rx",6)}
+      r.setAttribute("fill","rgba(8,16,36,.7)");r.setAttribute("stroke","#b0c6ea");r.setAttribute("stroke-width","2.4");
+      g.appendChild(r);
+    }
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+/* reef-bg.css  -  moving reef background for aquacalc pages
+   Layers (back to front): drifting photo -> floating plankton canvas -> dark shade for legibility */
+
+.reef-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;            /* sits behind all page content */
+  overflow: hidden;
+  background: #020a16;    /* shows while the photo loads */
+  pointer-events: none;   /* never blocks clicks */
+}
+
+/* Layer 1a: pointer/scroll parallax (JS sets --px / --py, -1 to 1) */
+.reef-bg__parallax {
+  position: absolute;
+  inset: -8%;             /* oversize so edges never show while moving */
+  transform: translate3d(calc(var(--px, 0) * -14px), calc(var(--py, 0) * -14px), 0);
+  transition: transform 0.9s ease-out;
+  will-change: transform;
+}
+
+/* Layer 1b: the photo, slowly drifting and zooming (pure CSS) */
+.reef-bg__img {
+  position: absolute;
+  inset: 0;
+  background: url("reef-bg.jpg") center 40% / cover no-repeat;
+  animation: reef-drift 70s ease-in-out infinite alternate;
+  will-change: transform;
+}
+@keyframes reef-drift {
+  from { transform: translate3d(0, 0, 0)       scale(1.00); }
+  to   { transform: translate3d(-1.5%, -2.5%, 0) scale(1.12); }
+}
+
+/* Layer 2: plankton particles (drawn by reef-bg.js) */
+.reef-bg__canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* Layer 3: shade keeps text readable; darker at top and bottom, lighter in the middle */
+.reef-bg__shade {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 45%, rgba(2,10,22,0.15) 0%, rgba(2,10,22,0.55) 100%),
+    linear-gradient(to bottom, rgba(2,10,22,0.55) 0%, rgba(2,10,22,0.15) 35%, rgba(2,10,22,0.6) 100%);
+}
+
+/* Optional: frosted panel so calculator inputs stay readable over the photo */
+.reef-panel {
+  background: rgba(4, 16, 32, 0.62);
+  border: 1px solid rgba(140, 200, 255, 0.18);
+  border-radius: 14px;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+/* Accessibility: people who ask their device to reduce motion get a still image */
+@media (prefers-reduced-motion: reduce) {
+  .reef-bg__img { animation: none; }
+  .reef-bg__parallax { transition: none; transform: none; }
+}
