@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Calculator and converter | aquacalc</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Outfit:wght@300;400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+<style>
+.page{max-width:540px;margin:0 auto;padding:64px 0 96px}
+h1{font:500 clamp(45px,7vw,67px)/1.05 "Cormorant Garamond",Georgia,serif;letter-spacing:-.02em;margin:0 0 12px}
+.sub{color:var(--mute);margin:0 0 32px}
+button,select,input{font:inherit;color:inherit}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--aqua);outline-offset:2px}
+
+/* Tabs */
+.tabs{display:inline-flex;padding:4px;border:1px solid var(--line-strong);border-radius:99px;margin-bottom:24px}
+.tab{border:0;background:transparent;color:var(--mute);padding:9px 22px;border-radius:99px;cursor:pointer;font-weight:500;font-size:14px;transition:background .15s,color .15s}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--aqua);color:#031024}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px}
+
+/* Calculator */
+.screen{text-align:right;padding:16px 8px 22px;min-height:132px;display:flex;flex-direction:column;justify-content:flex-end;gap:6px}
+.prev{color:var(--mute);font-size:15px;min-height:22px;overflow-wrap:anywhere}
+.cur{font:300 52px/1.1 "Outfit",sans-serif;letter-spacing:-.02em;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.key{height:62px;border-radius:16px;border:1px solid var(--line);background:#0a1424;font-size:21px;cursor:pointer;transition:background .12s,transform .08s,border-color .12s}
+.key:hover{background:#10213a;border-color:var(--line-strong)}
+.key:active{transform:scale(.96)}
+.key.fn{color:var(--mute);font-size:18px}
+.key.op{color:var(--aqua);background:#0b1a2e}
+.key.op:hover{background:#12294a}
+.key.eq{background:var(--aqua);color:#031024;border-color:var(--aqua);font-weight:500}
+.key.eq:hover{background:#fff;border-color:var(--aqua)}
+
+.hist{margin-top:28px}
+.hist h2{font:500 25px/1.2 "Cormorant Garamond",Georgia,serif;margin:0 0 10px;display:flex;justify-content:space-between;align-items:baseline}
+.hist h2 button{background:none;border:0;color:var(--mute);font:400 13px "Outfit",sans-serif;cursor:pointer;padding:0}
+.hist h2 button:hover{color:var(--ink)}
+.hist .empty{color:var(--mute);font-size:14px;margin:0}
+.hrow{display:flex;justify-content:space-between;gap:16px;width:100%;padding:11px 0;background:none;border:0;border-bottom:1px solid var(--line);cursor:pointer;text-align:left;font-size:14px}
+.hrow span:first-child{color:var(--mute)}
+.hrow span:last-child{font-weight:500;font-variant-numeric:tabular-nums}
+.hrow:hover span:first-child{color:var(--ink)}
+
+/* Converter */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.chip{border:1px solid var(--line-strong);background:transparent;color:var(--mute);padding:7px 14px;border-radius:99px;cursor:pointer;font-size:13.5px;transition:all .15s}
+.chip:hover{color:var(--ink);border-color:var(--mute)}
+.chip[aria-pressed="true"]{background:var(--aqua);color:#031024;border-color:var(--aqua);font-weight:500}
+.cv-label{font-size:13px;color:var(--mute);margin:0 0 6px}
+.cv{display:grid;grid-template-columns:minmax(0,1fr) 138px;gap:10px}
+.cv input,.cv select{background:#07101f;border:1px solid var(--line);border-radius:12px;padding:12px 14px;min-width:0;width:100%}
+.cv input{font-size:24px;font-weight:300;font-variant-numeric:tabular-nums}
+.cv input:focus,.cv select:focus{outline:none;border-color:var(--aqua)}
+.cv select{font-size:15px;appearance:none;-webkit-appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a9bb5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat:no-repeat;background-position:right 10px center;background-size:16px;padding-right:32px}
+.cv select option{background:#111;color:var(--ink)}
+.swapwrap{display:flex;justify-content:center;margin:14px 0}
+.swap{width:40px;height:40px;border-radius:50%;border:1px solid var(--line-strong);background:transparent;cursor:pointer;display:grid;place-items:center;color:var(--mute);transition:all .2s}
+.swap:hover{background:#fff;color:#000;border-color:var(--aqua)}
+.swap svg{width:18px;height:18px}
+.all{margin-top:26px;padding-top:6px;border-top:1px solid var(--line)}
+.all h2{font:500 25px/1.2 "Cormorant Garamond",Georgia,serif;margin:18px 0 6px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 24px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.row:last-child{border-bottom:0}
+.row span:first-child{color:var(--mute)}
+.row span:last-child{font-weight:500;text-align:right;font-variant-numeric:tabular-nums}
+.row.cur-unit span:first-child{color:var(--ink)}
+@media (max-width:420px){.cv{grid-template-columns:1fr}.key{height:56px}.cur{font-size:44px}}
+
+/* Apple-style glass */
+html{background:radial-gradient(ellipse 90% 55% at 50% 0%,#10306e 0%,#030a1c 62%,#01040a 100%) no-repeat fixed}
+.card{background:var(--glass);border:1px solid var(--glass-border);box-shadow:var(--glass-shadow);-webkit-backdrop-filter:blur(26px) saturate(180%);backdrop-filter:blur(26px) saturate(180%);border-radius:28px}
+.tabs{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.18);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%)}
+.tab[aria-selected="true"]{background:rgba(255,255,255,.22);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 2px 10px rgba(0,8,30,.35)}
+.key{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
+.key:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.26)}
+.key.op{background:rgba(122,184,255,.18);color:#c8e2ff}
+.key.op:hover{background:rgba(122,184,255,.3)}
+.key.fn{color:#c3d0e6}
+.chip{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.2);color:#c3d0e6}
+.cv input,.cv select{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.17)}
+.cv input:focus,.cv select:focus{background:rgba(255,255,255,.13);border-color:var(--aqua)}
+.swap{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.22);color:var(--ink)}
+.swap:hover{background:var(--aqua);color:#031024;border-color:var(--aqua)}
+.hrow,.row,.all{border-color:rgba(255,255,255,.1)}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="wrap">
+<a class="logo" href="index.html" aria-label="Back to aquacalc home"><span class="back" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6 6 6 6"/></svg></span><svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 11.5a7.5 7.5 0 0 1 15 0c0 .6-.4 1-1 1h-13c-.6 0-1-.4-1-1z"/><path d="M8 15c-.9 1.8.9 2.7 0 4.5M12 15c-.9 2 .9 3 0 5.5M16 15c-.9 1.8.9 2.7 0 4.5"/><circle cx="9" cy="9" r=".7" fill="currentColor"/><circle cx="14" cy="8.5" r=".7" fill="currentColor"/></svg><span class="word">aquacalc</span></a>
+<span class="where">Calculator</span>
+</div></header>
+
+<main class="wrap"><div class="page">
+<h1>Calculator</h1>
+<p class="sub">Do the sums, then switch to the converter for units.</p>
+
+<div class="tabs" role="tablist" aria-label="Mode">
+<button class="tab" role="tab" id="t-calc" aria-selected="true" aria-controls="p-calc">Calculate</button>
+<button class="tab" role="tab" id="t-conv" aria-selected="false" aria-controls="p-conv">Convert</button>
+</div>
+
+<!-- Calculator panel -->
+<div id="p-calc" role="tabpanel" aria-labelledby="t-calc">
+<div class="card">
+<div class="screen" aria-live="polite"><div class="prev" id="prev"></div><div class="cur" id="cur">0</div></div>
+<div class="keys">
+<button class="key fn" data-k="AC" aria-label="Clear">AC</button>
+<button class="key fn" data-k="BK" aria-label="Backspace">⌫</button>
+<button class="key fn" data-k="%" aria-label="Percent">%</button>
+<button class="key op" data-k="/" aria-label="Divide">÷</button>
+<button class="key" data-k="7">7</button><button class="key" data-k="8">8</button><button class="key" data-k="9">9</button>
+<button class="key op" data-k="*" aria-label="Multiply">×</button>
+<button class="key" data-k="4">4</button><button class="key" data-k="5">5</button><button class="key" data-k="6">6</button>
+<button class="key op" data-k="-" aria-label="Subtract">−</button>
+<button class="key" data-k="1">1</button><button class="key" data-k="2">2</button><button class="key" data-k="3">3</button>
+<button class="key op" data-k="+" aria-label="Add">+</button>
+<button class="key fn" data-k="NEG" aria-label="Change sign">±</button>
+<button class="key" data-k="0">0</button>
+<button class="key" data-k=".">.</button>
+<button class="key eq" data-k="=" aria-label="Equals">=</button>
+</div>
+</div>
+<div class="hist">
+<h2>History <button id="clearHist" type="button">Clear</button></h2>
+<div id="hist"></div>
+</div>
+</div>
+
+<!-- Converter panel -->
+<div id="p-conv" role="tabpanel" aria-labelledby="t-conv" hidden>
+<div class="card">
+<div class="chips" id="chips" role="group" aria-label="Unit type"></div>
+<p class="cv-label">From</p>
+<div class="cv"><input id="fromVal" type="text" inputmode="decimal" value="1" aria-label="Value to convert"><select id="fromUnit" aria-label="From unit"></select></div>
+<div class="swapwrap"><button class="swap" id="swap" type="button" aria-label="Swap units"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v16M3 8l4-4 4 4M17 20V4M13 16l4 4 4-4"/></svg></button></div>
+<p class="cv-label">To</p>
+<div class="cv"><input id="toVal" type="text" inputmode="decimal" aria-label="Converted value"><select id="toUnit" aria-label="To unit"></select></div>
+<div class="all"><h2>All units</h2><div id="all"></div></div>
+</div>
+</div>
+
+</div></main>
+
+<footer class="site"><div class="wrap"><span class="word">aquacalc</span><span>Calculators for reefs, aquariums and open water.</span></div></footer>
+
+<script>
+/* ---------- Tabs ---------- */
+const tabs={calc:["t-calc","p-calc"],conv:["t-conv","p-conv"]};
+let mode="calc";
+function setMode(m){mode=m;for(const k in tabs){const on=k===m;document.getElementById(tabs[k][0]).setAttribute("aria-selected",on);document.getElementById(tabs[k][1]).hidden=!on}
+  document.querySelector(".where").textContent=m==="calc"?"Calculator":"Unit converter"}
+document.getElementById("t-calc").onclick=()=>setMode("calc");
+document.getElementById("t-conv").onclick=()=>setMode("conv");
+if(location.hash==="#convert")setMode("conv");
+
+/* ---------- Calculator ---------- */
+let expr="",justEval=false,hist=[];
+const cur=document.getElementById("cur"),prev=document.getElementById("prev");
+const isOp=c=>"+-*/".includes(c);
+const pretty=s=>s.replace(/\*/g,"×").replace(/\//g,"÷").replace(/-/g,"−");
+
+function evaluate(src){
+  let s=src.replace(/[+\-*/]+$/,"");
+  let open=0;for(const c of s){if(c==="(")open++;else if(c===")")open--}
+  s+=")".repeat(Math.max(0,open));
+  let i=0;
+  const pk=()=>s[i];
+  function num(){const m=/^(\d+\.?\d*|\.\d+)(e[+-]?\d+)?/i.exec(s.slice(i));if(!m)throw 0;i+=m[0].length;return parseFloat(m[0])}
+  function prim(){if(pk()==="("){i++;const v=ex();if(pk()!==")")throw 0;i++;return v}return num()}
+  function post(){let v=prim();while(pk()==="%"){i++;v/=100}return v}
+  function un(){if(pk()==="-"){i++;return -un()}if(pk()==="+"){i++;return un()}return post()}
+  function term(){let v=un();while(pk()==="*"||pk()==="/"){const o=s[i++],r=un();if(o==="*")v*=r;else{if(r===0)throw 0;v/=r}}return v}
+  function ex(){let v=term();while(pk()==="+"||pk()==="-"){const o=s[i++],r=term();v=o==="+"?v+r:v-r}return v}
+  const r=ex();if(i!==s.length||!isFinite(r))throw 0;return r;
+}
+const fmtRes=n=>String(Number(n.toPrecision(12)));
+
+function render(){
+  const t=expr===""?"0":pretty(expr);
+  cur.textContent=t;
+  cur.style.fontSize=t.length>22?"26px":t.length>14?"36px":"";
+}
+function press(k){
+  if(k==="AC"){expr="";prev.textContent="";justEval=false;return render()}
+  if(k==="BK"){if(justEval){expr="";prev.textContent=""}else expr=expr.slice(0,-1);justEval=false;return render()}
+  if(k==="="){
+    if(!expr||!/[\d)]/.test(expr))return;
+    try{const r=fmtRes(evaluate(expr));prev.textContent=pretty(expr.replace(/[+\-*/]+$/,""))+" =";hist.unshift([pretty(expr.replace(/[+\-*/]+$/,"")),r]);hist=hist.slice(0,8);renderHist();expr=r;justEval=true}
+    catch(e){prev.textContent=pretty(expr)+" =";expr="";justEval=true;cur.textContent="Error";return}
+    return render();
+  }
+  if(k==="NEG"){
+    const m=/(\d+\.?\d*(?:e[+-]?\d+)?|\.\d+)$/i.exec(expr);
+    if(!m)return;const idx=m.index,before=expr[idx-1],before2=expr[idx-2];
+    if(before==="-"&&(idx-1===0||isOp(before2)||before2==="(")){expr=expr.slice(0,idx-1)+expr.slice(idx)}
+    else expr=expr.slice(0,idx)+"-"+expr.slice(idx);
+    justEval=false;return render();
+  }
+  if(/\d/.test(k)){
+    if(justEval){expr="";prev.textContent="";justEval=false}
+    const m=/(\d+\.?\d*|\.\d+)$/.exec(expr);
+    if(m&&m[0]==="0"&&!m[0].includes("."))expr=expr.slice(0,-1);
+    expr+=k;return render();
+  }
+  if(k==="."){
+    if(justEval){expr="";prev.textContent="";justEval=false}
+    const m=/(\d*\.?\d*)$/.exec(expr)[0];
+    if(m.includes("."))return;
+    expr+=m===""?"0.":".";return render();
+  }
+  if(k==="%"){if(/[\d)%]$/.test(expr)){expr+="%";justEval=false}return render()}
+  if(isOp(k)){
+    justEval=false;
+    if(expr===""){expr=k==="-"?"-":"0"+k;return render()}
+    if(expr==="-")return;
+    if(isOp(expr.slice(-1))){expr=expr.slice(0,-1)+k}else expr+=k;
+    return render();
+  }
+  if(k==="("){if(justEval){expr="";justEval=false}expr+=(/[\d)%]$/.test(expr)?"*":"")+"(";return render()}
+  if(k===")"){const o=(expr.match(/\(/g)||[]).length-(expr.match(/\)/g)||[]).length;if(o>0&&/[\d)%]$/.test(expr))expr+=")";return render()}
+}
+function renderHist(){
+  const h=document.getElementById("hist");
+  if(!hist.length){h.innerHTML='<p class="empty">Finished calculations appear here. Tap one to reuse its result.</p>';return}
+  h.innerHTML=hist.map((x,i)=>`<button class="hrow" type="button" data-i="${i}"><span>${x[0]}</span><span>${x[1]}</span></button>`).join("");
+}
+document.getElementById("hist").addEventListener("click",e=>{const b=e.target.closest(".hrow");if(!b)return;expr=hist[+b.dataset.i][1];justEval=true;prev.textContent="";render()});
+document.getElementById("clearHist").onclick=()=>{hist=[];renderHist()};
+document.querySelector(".keys").addEventListener("click",e=>{const b=e.target.closest(".key");if(b)press(b.dataset.k)});
+document.addEventListener("keydown",e=>{
+  if(mode!=="calc"||e.ctrlKey||e.metaKey||e.altKey)return;
+  const t=e.target.tagName;if(t==="INPUT"||t==="SELECT"||t==="TEXTAREA")return;
+  const k=e.key;let m=null;
+  if(/^[0-9]$/.test(k))m=k;
+  else if(k==="."||k===",")m=".";
+  else if(k==="+"||k==="-"||k==="*"||k==="/")m=k;
+  else if(k==="x"||k==="X")m="*";
+  else if(k==="%"||k==="("||k===")")m=k;
+  else if(k==="Enter"||k==="=")m="=";
+  else if(k==="Backspace")m="BK";
+  else if(k==="Escape"||k==="Delete")m="AC";
+  if(m!==null){e.preventDefault();press(m)}
+});
+render();renderHist();
+
+/* ---------- Converter ---------- */
+const CAT={
+ Length:{u:[["millimetre (mm)",.001],["centimetre (cm)",.01],["metre (m)",1],["kilometre (km)",1000],["inch (in)",.0254],["foot (ft)",.3048],["yard (yd)",.9144],["mile (mi)",1609.344],["nautical mile (nmi)",1852],["fathom (ftm)",1.8288]],d:[2,5]},
+ Mass:{u:[["milligram (mg)",1e-6],["gram (g)",.001],["kilogram (kg)",1],["tonne (t)",1000],["ounce (oz)",.028349523125],["pound (lb)",.45359237]],d:[2,5]},
+ Volume:{u:[["millilitre (mL)",.001],["litre (L)",1],["cubic metre (m³)",1000],["US fluid ounce",.0295735295625],["US cup",.2365882365],["US quart",.946352946],["US gallon",3.785411784],["UK gallon",4.54609]],d:[1,6]},
+ Area:{u:[["square centimetre (cm²)",1e-4],["square metre (m²)",1],["hectare (ha)",1e4],["square kilometre (km²)",1e6],["square inch (in²)",6.4516e-4],["square foot (ft²)",.09290304],["acre",4046.8564224],["square mile (mi²)",2589988.110336]],d:[1,5]},
+ Temperature:{t:true,u:[["Celsius (°C)"],["Fahrenheit (°F)"],["Kelvin (K)"]],d:[0,1]},
+ Speed:{u:[["metre/second (m/s)",1],["kilometre/hour (km/h)",1/3.6],["mile/hour (mph)",.44704],["knot (kn)",1852/3600],["foot/second (ft/s)",.3048]],d:[1,3]},
+ Pressure:{u:[["pascal (Pa)",1],["kilopascal (kPa)",1000],["decibar (dbar)",1e4],["bar",1e5],["atmosphere (atm)",101325],["psi",6894.757293168],["mmHg",133.322387415]],d:[3,5]}
+};
+let cat="Length",fi=2,ti=5;
+const $=id=>document.getElementById(id);
+const fromVal=$("fromVal"),toVal=$("toVal"),fromUnit=$("fromUnit"),toUnit=$("toUnit");
+const toBaseT=(v,i)=>i===0?v:i===1?(v-32)*5/9:v-273.15;
+const fromBaseT=(c,i)=>i===0?c:i===1?c*9/5+32:c+273.15;
+function conv(v,a,b){
+  const C=CAT[cat];
+  if(C.t)return fromBaseT(toBaseT(v,a),b);
+  return v*C.u[a][1]/C.u[b][1];
+}
+const fmt=n=>{if(!isFinite(n))return "";const r=Number(n.toPrecision(10));return Math.abs(r)>=1e12||(Math.abs(r)<1e-6&&r!==0)?r.toExponential(4):r.toString()};
+const parse=s=>{const v=parseFloat(String(s).replace(",","."));return isNaN(v)?null:v};
+
+function buildChips(){
+  $("chips").innerHTML=Object.keys(CAT).map(k=>`<button class="chip" type="button" data-c="${k}" aria-pressed="${k===cat}">${k}</button>`).join("");
+}
+function fillUnits(){
+  const opts=CAT[cat].u.map((u,i)=>`<option value="${i}">${u[0]}</option>`).join("");
+  fromUnit.innerHTML=opts;toUnit.innerHTML=opts;fromUnit.value=fi;toUnit.value=ti;
+}
+function refreshAll(){
+  const v=parse(fromVal.value);
+  $("all").innerHTML=v===null?'<p class="empty" style="color:var(--mute);margin:12px 0">Enter a value to see every unit.</p>':CAT[cat].u.map((u,j)=>`<div class="row${j===fi?" cur-unit":""}"><span>${u[0]}</span><span>${fmt(conv(v,fi,j))}</span></div>`).join("");
+}
+function fromChanged(){const v=parse(fromVal.value);toVal.value=v===null?"":fmt(conv(v,fi,ti));refreshAll()}
+function toChanged(){const v=parse(toVal.value);fromVal.value=v===null?"":fmt(conv(v,ti,fi));refreshAll()}
+function selectCat(c){cat=c;[fi,ti]=CAT[c].d;buildChips();fillUnits();fromChanged()}
+
+$("chips").addEventListener("click",e=>{const b=e.target.closest(".chip");if(b)selectCat(b.dataset.c)});
+fromVal.addEventListener("input",fromChanged);
+toVal.addEventListener("input",toChanged);
+fromUnit.addEventListener("change",()=>{fi=+fromUnit.value;fromChanged()});
+toUnit.addEventListener("change",()=>{ti=+toUnit.value;fromChanged()});
+$("swap").addEventListener("click",()=>{
+  const a=fi;fi=ti;ti=a;fromUnit.value=fi;toUnit.value=ti;
+  fromVal.value=toVal.value;fromChanged();
+});
+buildChips();fillUnits();fromChanged();
+</script>
+</body>
+</html>
